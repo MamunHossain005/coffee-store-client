@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createContext } from "react";
-import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import auth from "../firebase/firebase.config";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -32,6 +32,12 @@ const AuthProvider = ({children}) => {
         return signOut(auth);
     }
 
+    //reset password
+    const resetPassword = email => {
+        setLoading(true);
+        return sendPasswordResetEmail(auth, email);
+    }
+
     //user current state
     useEffect(() => {
         const unSubscribe = onAuthStateChanged(auth, user => {
@@ -43,7 +49,7 @@ const AuthProvider = ({children}) => {
         }
     }, [])
 
-    const authInfo = {user, loading, setSuccessText, setErrorText, registerUser, loginUser, logoutUser};
+    const authInfo = {user, loading, setSuccessText, setErrorText, registerUser, loginUser, logoutUser, resetPassword};
 
     if(successText){
         MySwal.fire({

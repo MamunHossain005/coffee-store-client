@@ -8,9 +8,10 @@ import { AuthContext } from "../../provider/AuthProvider";
 
 const Login = () => {
     const [show, setShow] = useState(false);
-    const { user, setSuccessText, setErrorText, loginUser } = useContext(AuthContext);
+    const { user, setSuccessText, setErrorText, loginUser, resetPassword } = useContext(AuthContext);
     const location = useLocation();
     const navigate = useNavigate();
+    const [resetEmail, setResetEmail] = useState('');
 
     const form = useForm({
         defaultValues: {
@@ -52,6 +53,31 @@ const Login = () => {
         }
     }, [isSubmitSuccessful, reset]);
 
+    const handleForget = () => {
+        const regexEmail = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g;
+
+        setErrorText('');
+        setSuccessText('');
+
+        if(resetEmail){
+            if(regexEmail.test(resetEmail)){
+                resetPassword(resetEmail)
+                .then(() => {
+                    setSuccessText('Password reset email sent');
+                })
+                .catch(error => {
+                    setErrorText(error.message);
+                })
+            }
+            else {
+                setErrorText('Invalid email address');
+            }
+        }
+        else {
+            setErrorText('Please enter a valid email address');
+        }
+    }
+
     return (
         <div className="container mx-auto bg-lime-50 py-12 px-8 h-screen">
             <div className="w-48">
@@ -72,6 +98,10 @@ const Login = () => {
                         pattern: {
                             value: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g,
                             message: "Invalid email address",
+                        },
+                        onBlur: e => {
+                            const email = e.target.value;
+                            setResetEmail(email);
                         }
                     })} />
                     <p className="text-red-600 mx-1 mt-1">{errors.email?.message}</p>
@@ -92,9 +122,9 @@ const Login = () => {
                             message: "Invalid password",
                         }
                     })} />
-                    <div onClick={() => setShow(!show)} className="text-xl absolute bottom-[15%] right-[3%]">
+                    <button onClick={() => setShow(!show)} className="text-xl absolute bottom-[15%] right-[3%]">
                         {show ? <IoEyeOff /> : <IoEye />}
-                    </div>
+                    </button>
                     <p className="text-red-600 mx-1 mt-1">{errors.password?.message}</p>
                 </div>
                 <div className="text-center">
@@ -102,7 +132,7 @@ const Login = () => {
                 </div>
             </form>
             <p className="mt-4 text-center">Don't have an account? Please <Link to={'/register'}><span className="font-bold text-sky-700 hover:underline">Register</span></Link>.</p>
-            <button className={`ms-1 text-sm hover:underline relative bottom-[27%] left-[22.5%]`}>Forget your password?</button>
+            <button className="ms-1 text-sm hover:underline relative bottom-[27%] left-[22.5%]" onClick={handleForget}>Forget your password?</button>
         </div>
     );
 };
