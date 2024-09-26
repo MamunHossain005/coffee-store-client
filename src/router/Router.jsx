@@ -4,6 +4,9 @@ import Home from "../pages/Home/Home";
 import AddCoffee from "../pages/AddCoffee/AddCoffee";
 import UpdateCoffee from "../pages/UpdateCoffee/UpdateCoffee";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
+import Login from "../pages/Login/Login";
+import Register from "../pages/Register/Register";
+import PrivateRouter from "./PrivateRouter/PrivateRouter";
 
 const router = createBrowserRouter([
     {
@@ -18,12 +21,20 @@ const router = createBrowserRouter([
             },
             {
                 path: '/addCoffee',
-                element: <AddCoffee></AddCoffee>
+                element: <PrivateRouter><AddCoffee></AddCoffee></PrivateRouter>
             }, 
             {
                 path: '/updateCoffee/:id',
                 loader: ({params}) => fetch(`http://localhost:5000/coffees/${params.id}`),
-                element: <UpdateCoffee></UpdateCoffee>
+                element: <PrivateRouter><UpdateCoffee></UpdateCoffee></PrivateRouter>
+            },
+            {
+                path: '/login',
+                element: <Login></Login>
+            },
+            {
+                path: '/register',
+                element: <Register></Register>
             }
         ]   
     }
